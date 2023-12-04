@@ -19,7 +19,7 @@ def draw_graph(G, pos):
     nx.draw_networkx_edges(G, pos, alpha=0.7)
     nx.draw_networkx_nodes(G, pos, node_color=node_color)
     nx.draw_networkx_labels(G, pos, font_color='white')
-    plt.title('SIR Model Simulation')
+    plt.title('Cascade in Random Graph')
     plt.show()
 
 def main():
