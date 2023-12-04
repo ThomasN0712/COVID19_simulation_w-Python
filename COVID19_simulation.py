@@ -40,14 +40,16 @@ def main():
     vaccine = False
 
     while True:
-        print("-----COVID19 Simulation using SIR-----\n1. Create new graph\n2. Enable/disable shelter in place measures\n3. Enable/disable Vaccine effect\n4. Start simulation\n5. Exit")
+        # menu
+        print("-----COVID19 Simulation using SIR-----\n1. Create new graph and set attributes \n2. Enable/disable shelter in place measures\n3. Enable/disable Vaccine effect\n4. Start simulation\n5. Exit")
         user_input = input("Enter your choice: ")
+
+        # create new graph
         if user_input == '1':
-            # n = int(input("Enter the number of nodes: "))
-            n = 20
-            # edge_p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
-            edge_p = 0.2
+            n = int(input("Enter the number of nodes: "))
+            edge_p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
             G = nx.fast_gnp_random_graph(n, edge_p, directed=True)
+            # Try to use planer layout if possible, otherwise use spring layout
             try:
                 pos = nx.planar_layout(G)
             except:
@@ -68,76 +70,80 @@ def main():
             nx.set_node_attributes(G, dict, 'state')
 
             # Ask user for a threshold q:
-            # p = float(input("Enter the probability of contagion (0.0 - 1.0): "))
-            # if p > 1.0:
-            #     p = 1.0
-            # if p < 0.0:
-            #     p = 0.0
-            p = 0.5
+            p = float(input("Enter the probability of contagion (0.0 - 1.0): "))
+            if p > 1.0:
+                p = 1.0
+            if p < 0.0:
+                p = 0.0
 
-            # t = int(input("Enter the length of infection: "))
-            t = 1
+            t = int(input("Enter the length of infection: "))
             nx.set_node_attributes(G, t, 'time')
-    
-        if user_input == "2":
-            '''
-            If enabled, the probability of contagion is halved.
-            '''
-            # shelter in place
-            if shelter_in_place == False:
-                print("\n----Shelter in place measures enabled----\n")
-                shelter_in_place = True
-                p = p/2
-            elif shelter_in_place == True:
-                print("\n----Shelter in place measures disabled----\n")
-                shelter_in_place = False
-                p = p*2
+
+        try:
+            # enable/disable shelter in place measures
+            if user_input == "2":
+                '''
+                If enabled, the probability of contagion is halved.
+                '''
+                # shelter in place
+                if shelter_in_place == False:
+                    print("\n----Shelter in place measures enabled----\n")
+                    shelter_in_place = True
+                    p = p/2
+                elif shelter_in_place == True:
+                    print("\n----Shelter in place measures disabled----\n")
+                    shelter_in_place = False
+                    p = p*2
             
-        if user_input == "3":
-            '''
-            If enabled, random portion of the population will be vaccinated at random during the simulation.
-            '''
-            # vaccine
-            if vaccine == False:
-                print("\n----Vaccine effect enabled----\n")
-                vaccine = True
-            elif vaccine == True:
-                print("\n----Vaccine effect disabled----\n")
-                vaccine = False
-        
-        if user_input == "4":
-            flag = True
-            iter = 0
-            # main loop
-            while flag == True:
-                iter += 1
-                flag = False
+            # enable/disable vaccine effect
+            if user_input == "3":
+                '''
+                If enabled, random portion of the population will be vaccinated at random during the simulation.
+                '''
+                # vaccine
+                if vaccine == False:
+                    print("\n----Vaccine effect enabled----\n")
+                    vaccine = True
+                elif vaccine == True:
+                    print("\n----Vaccine effect disabled----\n")
+                    vaccine = False
+            
+            # start simulation
+            if user_input == "4":
+                flag = True
+                iter = 0
+                # main loop
+                while flag == True:
+                    iter += 1
+                    flag = False
 
-                # if vaccine is enabled, randomly select up to 1/5 of the population to be vaccinated
-                if vaccine == True:
-                    vaccinated_num = random.randint(1, math.ceil(n/5))
-                    vaccinated = {}
-                    for i in range (vaccinated_num):
-                        vaccinated_node = random.randint(0, n-1)
-                        vaccinated[vaccinated_node] = 'V'
-                    nx.set_node_attributes(G, vaccinated, 'state')
+                    # if vaccine is enabled, randomly select up to 1/5 of the population to be vaccinated
+                    if vaccine == True:
+                        vaccinated_num = random.randint(1, math.ceil(n/5))
+                        vaccinated = {}
+                        for i in range (vaccinated_num):
+                            vaccinated_node = random.randint(0, n-1)
+                            vaccinated[vaccinated_node] = 'V'
+                        nx.set_node_attributes(G, vaccinated, 'state')
 
-                for node in G.nodes():
-                    # if node is infected, check if it is time to recover, if not, reduce counter attribute by one day
-                    if G.nodes[node]['state'] == 'I':
-                        if G.nodes[node]['time'] <= 0:
-                            G.nodes[node]['state'] = 'R'
-                        else:
-                            G.nodes[node]['time'] -= 1
-                        #check if surrounding nodes are susceptible, if yes, infect roll the dice and infect them
-                        for neighbor in G.neighbors(node):
-                            if G.nodes[neighbor]['state'] == 'S':
-                                if random.random() < p:
-                                    G.nodes[neighbor]['state'] = 'I'
-                        flag = True
-
-                draw_graph(G, pos, iter, shelter_in_place, vaccine)
-
+                    for node in G.nodes():
+                        # if node is infected, check if it is time to recover, if not, reduce counter attribute by one day
+                        if G.nodes[node]['state'] == 'I':
+                            if G.nodes[node]['time'] <= 0:
+                                G.nodes[node]['state'] = 'R'
+                            else:
+                                G.nodes[node]['time'] -= 1
+                            #check if surrounding nodes are susceptible, if yes, infect roll the dice and infect them
+                            for neighbor in G.neighbors(node):
+                                if G.nodes[neighbor]['state'] == 'S':
+                                    if random.random() < p:
+                                        G.nodes[neighbor]['state'] = 'I'
+                            flag = True
+                    draw_graph(G, pos, iter, shelter_in_place, vaccine)
+        except:
+            print("Please create a graph first.")
+            
+        # exit
         if user_input == "5":
             break
 
