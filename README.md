@@ -16,9 +16,9 @@ This Python code implements a basic simulation of the cascade effect on a random
 This program aims to explore the dynamics of COVID-19 spread through a simulation utilizing the SIR (Susceptible, Infected, Recovered) model. The simulation is conducted on a directed graph representing a population, where nodes represent individuals and edges denote potential transmission pathways.
 
 *Approach:*
-    -*Graph Initialization:* A new graph is created with user-specified attributes, and the SIR model is applied. The initial infection is introduced randomly, mimicking the unpredictable nature of disease spread.
-    -*Parameter Control:* Users have the flexibility to modify parameters during the simulation, including enabling/disabling shelter-in-place measures and vaccine effects. These user-controlled variables add a dynamic element to the simulation, allowing for a more nuanced exploration of different scenarios.
-    - *Simulation Loop:* The simulation progresses through iterations, with the state of nodes evolving based on infection and recovery dynamics. The visual representation of the graph at each iteration provides a clear snapshot of the simulated epidemic.
+- *Graph Initialization:* A new graph is created with user-specified attributes, and the SIR model is applied. The initial infection is introduced randomly, mimicking the unpredictable nature of disease spread.
+- *Parameter Control:* Users have the flexibility to modify parameters during the simulation, including enabling/disabling shelter-in-place measures and vaccine effects. These user-controlled variables add a dynamic element to the simulation, allowing for a more nuanced exploration of different scenarios.
+- *Simulation Loop:* The simulation progresses through iterations, with the state of nodes evolving based on infection and recovery dynamics. The visual representation of the graph at each iteration provides a clear snapshot of the simulated epidemic.
 
 *Analysis and Insights:*
 Impact of Shelter-in-Place Measures:
