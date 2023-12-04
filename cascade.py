@@ -1,3 +1,4 @@
+# Cascade.py 
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
@@ -8,28 +9,24 @@ def draw_graph(G, pos):
     node_color = []
     for node in G.nodes():
         if G.nodes[node]['state'] == 'S':
-            node_color.append('blue')
+            node_color.append('royalblue')
         elif G.nodes[node]['state'] == 'I':
-            node_color.append('red')
+            node_color.append('firebrick')
         else:
             node_color.append('green')
     
     # draw the graph:
-    nx.draw_networkx_edges(G, pos)
+    nx.draw_networkx_edges(G, pos, alpha=0.7)
     nx.draw_networkx_nodes(G, pos, node_color=node_color)
     nx.draw_networkx_labels(G, pos, font_color='white')
+    plt.title('SIR Model Simulation')
     plt.show()
-
 
 def main():
     n = int(input("Enter the number of nodes: "))
     edge_p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
     G = nx.fast_gnp_random_graph(n, edge_p)
     pos = nx.spring_layout(G)
-    print("\n----Create Random Graph successfully.----\n")
-
-    # SIR Model
-    # S: Susceptible, I: Infected, R: Recovered
 
     # Initialize all node to Susceptible state
     nx.set_node_attributes(G, 'S', 'state')
@@ -44,6 +41,10 @@ def main():
 
     # Ask user for a threshold q:
     p = float(input("Enter the threshold q (0.0 - 1.0): "))
+    if p > 1.0:
+        p = 1.0
+    if p < 0.0:
+        p = 0.0
     draw_graph(G, pos)
 
     # main loop
@@ -65,7 +66,6 @@ def main():
                     continue
                 # infect if threshold is lower than infected neighbors ratio
                 if p >= q:
-                    print("Node: ", node, "Infected!")
                     G.nodes[node]['state'] = 'I'
                     flag = True
 
