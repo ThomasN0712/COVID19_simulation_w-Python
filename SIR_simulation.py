@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-import numpy as np
+import math
 
 def draw_graph(G, pos):
     # color node based on states
@@ -14,20 +14,17 @@ def draw_graph(G, pos):
         else:
             node_color.append('green')
     
-
     # draw the graph:
     nx.draw_networkx_edges(G, pos)
     nx.draw_networkx_nodes(G, pos, node_color=node_color)
+    nx.draw_networkx_labels(G, pos, font_color='white')
     plt.show()
 
 
 def main():
-    
-    # n = int(input("Enter the number of nodes: "))
-    n = 8
-    # p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
-    p = 0.3
-    G = nx.fast_gnp_random_graph(n, p, directed=True)
+    n = int(input("Enter the number of nodes: "))
+    edge_p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
+    G = nx.fast_gnp_random_graph(n, edge_p)
     pos = nx.spring_layout(G)
     print("\n----Create Random Graph successfully.----\n")
 
@@ -38,7 +35,7 @@ def main():
     nx.set_node_attributes(G, 'S', 'state')
     
     # Select a random nodes to be infected
-    infected_num = random.randint(1, 2) 
+    infected_num = random.randint(1, math.ceil(n/5)) 
     dict = {}
     for i in range (infected_num):
         infected_node = random.randint(0, n-1)
@@ -46,7 +43,8 @@ def main():
     nx.set_node_attributes(G, dict, 'state')
 
     # Ask user for a threshold q:
-    q = float(input("Enter the threshold q (0.0 - 1.0): "))
+    p = float(input("Enter the threshold q (0.0 - 1.0): "))
+    draw_graph(G, pos)
 
     # main loop
     flag = True
@@ -59,18 +57,19 @@ def main():
                 for neighbor in G.neighbors(node):
                     if G.nodes[neighbor]['state'] == 'S':
                         infected_neighbors_counter += 1
-
-                q = infected_neighbors_counter/len(list(G.neighbors(node)))
-
-                if q > p:
+                
+                # Try catch for divide by zero
+                try:
+                    q = infected_neighbors_counter/len(list(G.neighbors(node)))
+                except:
+                    continue
+                # infect if threshold is lower than infected neighbors ratio
+                if p >= q:
+                    print("Node: ", node, "Infected!")
                     G.nodes[node]['state'] = 'I'
                     flag = True
-            draw_graph(G, pos)
-                 
-    print(G.nodes.data('state'))
 
-    
-    
+    draw_graph(G, pos)
 
 if __name__ == '__main__':
     main()
