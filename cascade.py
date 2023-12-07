@@ -22,6 +22,12 @@ def draw_graph(G, pos):
     plt.title('Cascade in Random Graph')
     plt.show()
 
+def plot_line_chart(x, y):
+    plt.plot(x, y, color='green')
+    plt.ylabel('Number of infected nodes')
+    plt.xlabel('Time')
+    plt.show()
+
 def main():
     n = int(input("Enter the number of nodes: "))
     edge_p = float(input("Enter the probability for edge creation (0.0 - 1.0): "))
@@ -32,7 +38,7 @@ def main():
     nx.set_node_attributes(G, 'S', 'state')
     
     # Select a random nodes to be infected
-    infected_num = random.randint(1, math.ceil(n/5)) 
+    infected_num = random.randint(math.ceil(n/5), math.ceil(n/3)) 
     dict = {}
     for i in range (infected_num):
         infected_node = random.randint(0, n-1)
@@ -49,6 +55,9 @@ def main():
 
     # main loop
     flag = True
+    x = []
+    counter = 0 
+    
     while flag == True:
         flag = False
         for node in G.nodes():
@@ -68,8 +77,14 @@ def main():
                 if p >= q:
                     G.nodes[node]['state'] = 'I'
                     flag = True
-
+                x.append(len([node for node in G.nodes() if G.nodes[node]['state'] == 'I']))
+                counter += 1
+    
     draw_graph(G, pos)
+    
+    # plot the number of infected nodes over time
+    y = list(range(0, counter)) 
+    plot_line_chart(x, y)
 
 if __name__ == '__main__':
     main()

@@ -34,7 +34,7 @@ def draw_graph(G, pos, iter, shelter_in_place, vaccine):
                       plt.Line2D([0], [0], marker='o', color='w', label='Vaccine effect: ' + str(vaccine), markerfacecolor='white', markersize=11)]
     plt.legend(legend_element, ["Susceptible", "Infected", "Recovered", "Vaccinated", "Iteration: " + str(iter), "Shelter in place measures: " + str(shelter_in_place), "Vaccine effect: " + str(vaccine)], loc = "best")
     plt.show()
-
+    
 def main():
     shelter_in_place = False
     vaccine = False
@@ -112,19 +112,23 @@ def main():
             if user_input == "4":
                 flag = True
                 iter = 0
+                susceptible = []
+                infected = []
+                recovered = []
+                vaccinated = []
+
                 # main loop
                 while flag == True:
                     iter += 1
                     flag = False
-
                     # if vaccine is enabled, randomly select up to 1/5 of the population to be vaccinated
                     if vaccine == True:
                         vaccinated_num = random.randint(1, math.ceil(n/5))
-                        vaccinated = {}
+                        vaccinated_dict = {}
                         for i in range (vaccinated_num):
                             vaccinated_node = random.randint(0, n-1)
-                            vaccinated[vaccinated_node] = 'V'
-                        nx.set_node_attributes(G, vaccinated, 'state')
+                            vaccinated_dict[vaccinated_node] = 'V'
+                        nx.set_node_attributes(G, vaccinated_dict, 'state')
 
                     for node in G.nodes():
                         # if node is infected, check if it is time to recover, if not, reduce counter attribute by one day
@@ -139,8 +143,34 @@ def main():
                                     if random.random() < p:
                                         G.nodes[neighbor]['state'] = 'I'
                             flag = True
+                        
+                        # count number of nodes in each state
+                        susceptible.append(len([node for node in G.nodes() if G.nodes[node]['state'] == 'S']))
+                        infected.append(len([node for node in G.nodes() if G.nodes[node]['state'] == 'I']))
+                        recovered.append(len([node for node in G.nodes() if G.nodes[node]['state'] == 'R']))
+                        vaccinated.append(len([node for node in G.nodes() if G.nodes[node]['state'] == 'V']))
+
                     draw_graph(G, pos, iter, shelter_in_place, vaccine)
-        except:
+
+                # plot
+                plotcount = 3
+                if vaccine == True:
+                    plotcount += 1
+
+                fig, axs = plt.subplots(plotcount, figsize=(10,7))
+                axs[0].plot(susceptible, color='royalblue')
+                axs[0].set_title('Susceptible')
+                axs[1].plot(infected, color='firebrick')
+                axs[1].set_title('Infected')
+                axs[2].plot(recovered, color='darkorange')
+                axs[2].set_title('Recovered')
+                if vaccine == True:
+                    axs[3].plot(vaccinated, color='forestgreen')
+                    axs[3].set_title('Vaccinated')
+                plt.show()
+
+        except Exception as exception:
+            print(exception)
             print("Please create a graph first.")
             
         # exit
